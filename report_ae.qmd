@@ -1,0 +1,86 @@
+---
+title: "Essentials in R and Rstudio"
+author: "Bahman Rostami-Tabar"
+format: 
+  html: 
+    toc: true
+    number-sections: true
+  pdf: 
+    toc: true
+    number-sections: true
+  docx: 
+    toc: true
+    number-sections: true
+execute: 
+  echo: false
+  warning: false
+  
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+library(lubridate)
+ae_raw <- read_csv("data/ed_wales_hospital.csv")
+source("analyse_ae.R")
+```
+
+# Introduction
+
+**Emergency department** in [NHS](https://www.nhs.uk/) admissions refer to the process of admitting individuals to a hospital's emergency department due to acute medical conditions or urgent health concerns that require immediate attention. Patients seeking emergency care typically present with severe injuries, sudden illnesses, or exacerbated chronic conditions that necessitate prompt medical evaluation and intervention. Upon arrival, they undergo a triage process to prioritize the severity of their condition, with critically ill or injured individuals receiving immediate attention. 
+
+Emergency department admissions play a crucial role in:
+
+* addressing time-sensitive medical issues, 
+* stabilizing patients,
+* determining the most appropriate course of treatment, which may include further hospitalization or referral to specialized services. 
+
+The goal is to provide timely and effective care to individuals facing acute health crises, ensuring their well-being and potentially preventing further deterioration of their health.
+
+# A&E admissions
+
+## Total admission
+
+```{r}
+#| label: timeseries-total
+p1
+```
+
+## Variation in admissions across organisations
+
+```{r}
+#| label: timeseries-org
+p2
+```
+
+## Time series of admissions across organisations
+
+
+```{r}
+#| label: timeseries-org-one
+ae_organisation <- ae |> group_by(month_year,organisation) |> summarise(admissions = sum(admissions))
+
+ggplot(data = ae_organisation, mapping = aes(x= month_year, y = admissions, color = organisation))+
+  geom_point()+
+  geom_line()
+```
+
+
+```{r}
+#| label: timeseries-org-panel
+ae_organisation <- ae |> group_by(month_year,organisation) |> summarise(admissions = sum(admissions))
+
+ggplot(data = ae_organisation, mapping = aes(x= month_year, y = admissions))+
+  geom_point()+
+  geom_line()+
+  facet_grid(vars(organisation))
+```
+
+# Discussion
+
+The Emergency Department admissions data reveals a notable trend of increased patient influx, suggesting a potential surge in healthcare demand. The higher admission rates could stem from various factors, such as seasonal variations, prevalent contagious illnesses, or community health dynamics. Examining the distribution of cases across different medical categories provides insights into the predominant health issues driving admissions. Additionally, analyzing the time-of-day patterns may unveil potential areas for resource optimization and improved patient management. This analysis prompts a closer examination of the factors contributing to the rise in admissions, enabling healthcare administrators to tailor strategies and allocate resources effectively to meet the evolving needs of the community.
+
+# Conclusion
+
+Some vaguely relevant text from Wikipedia for our discussion section: Fast decisions on life-and-death cases are critical in hospital emergency departments. As a result, doctors face great pressures to overtest and overtreat. The fear of missing something often leads to extra blood tests and imaging scans for what may be harmless chest pains, run-of-the-mill head bumps, and non-threatening stomach aches, with a high cost on the health care system.
